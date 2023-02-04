@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #game {
+        width: 500px;
+        height: 500px;
+        border: 1px solid black;
+        margin: 0 auto;
+        position: relative;
+      }
+      .paddle {
+        width: 50px;
+        height: 10px;
+        background-color: #0095DD;
+        position: absolute;
+        bottom: 0;
+        left: calc(50% - 25px);
+      }
+      .ball {
+        width: 10px;
+        height: 10px;
+        background-color: #FF5733;
+        border-radius: 50%;
+        position: absolute;
+        top: calc(100% - 20px); /* ball is initially on the paddle */
+        left: calc(50% - 5px);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game">
+      <div class="paddle"></div>
+      <div class="ball"></div>
+    </div>
+    <script>
+      let game = document.getElementById("game");
+      let paddle = document.querySelector(".paddle");
+      let ball = document.querySelector(".ball");
+      let xSpeed = 0; /* ball is initially not moving */
+      let ySpeed = 0;
+      let isMoving = false; /* flag to indicate if ball is moving */
+      document.addEventListener("keydown", function(event) {
+        if (event.code === "Enter" && !isMoving) {
+        /* start ball movement when enter is hit and ball is not already moving */
+        isMoving = true;
+        xSpeed = 5;
+        ySpeed = -5;
+      }
+    });
+    
+    function animate() {
+      let x = ball.offsetLeft + xSpeed;
+      let y = ball.offsetTop + ySpeed;
+      if (x + ball.offsetWidth > game.offsetWidth || x < 0) {
+        xSpeed = -xSpeed;
+      }
+      if (y < 0) {
+        ySpeed = -ySpeed;
+      }
+      if (y + ball.offsetHeight >= paddle.offsetTop && x > paddle.offsetLeft && x < paddle.offsetLeft + paddle.offsetWidth) {
+        /* randomly change direction when ball hits paddle */
+        xSpeed = Math.random() > 0.5 ? xSpeed : -xSpeed;
+        ySpeed = -ySpeed;
+      }
+      if (y + ball.offsetHeight > game.offsetHeight) {
+        alert("Game Over");
+        isMoving = false; /* reset ball movement */
+        x = 250 - 5;
+        y = paddle.offsetTop - 10; /* put ball back on paddle */
+        xSpeed = 0;
+        ySpeed = 0;
+      }
+      ball.style.left = x + "px";
+      ball.style.top = y + "px";
+      requestAnimationFrame(animate);
+    }
+    document.addEventListener("mousemove", function(event) {
+      let paddleX = event.clientX - game.offsetLeft - paddle.offsetWidth / 2;
+      if (paddleX >= 0 && paddleX + paddle.offsetWidth <= game.offsetWidth) {
+        paddle.style.left = paddleX + "px";
+      }
+    });
+    requestAnimationFrame(animate);
+    </script>
+  </body>
+</html>
